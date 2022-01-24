@@ -204,10 +204,10 @@ object Form1: TForm1
           '        print( np.argmax(ref_outputs), "recognized as: ", np.arg' +
           'max(outputs) )    '
         '        '
+        'path_to_model = delphi_form.onnxDirectory '
         
-          'path_to_model = r'#39'c:\Users\KoRiF\Documents\Embarcadero\Studio\Pr' +
-          'ojects\AI\ONNX\Zoo\models\vision\classification\mnist\model\mnis' +
-          't'#39
+          '#r'#39'c:\Users\KoRiF\Documents\Embarcadero\Studio\Projects\AI\ONNX\' +
+          'Zoo\models\vision\classification\mnist\model\mnist'#39
         'model_filename = os.path.join( path_to_model, '#39'model.onnx'#39' )'
         '# onnx_model is an in-memory ModelProto'
         'onnx_model = onnx.load(model_filename)'
@@ -239,9 +239,6 @@ object Form1: TForm1
         ''
         'delphi_form.RecognizedValue =  int(np.argmax(outputs))'
         ''
-        ''
-        ''
-        ''
         '')
     end
     object ButtonClear: TButton
@@ -252,6 +249,15 @@ object Form1: TForm1
       Caption = 'Clear'
       TabOrder = 2
       OnClick = ButtonClearClick
+    end
+    object ButtonSelectONNX: TButton
+      Left = 576
+      Top = 283
+      Width = 195
+      Height = 20
+      Caption = 'Select ONNX MNIST Directory...'
+      TabOrder = 3
+      OnClick = ButtonSelectONNXClick
     end
   end
   object Panel2: TPanel
