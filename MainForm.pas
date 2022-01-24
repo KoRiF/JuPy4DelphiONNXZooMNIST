@@ -28,6 +28,7 @@ type
     Image1: TImage;
     PyDelphiWrapper1: TPyDelphiWrapper;
     PythonModule1: TPythonModule;
+    ButtonSelectONNX: TButton;
     procedure btnRunClick(Sender: TObject);
     procedure PythonEngineBeforeLoad(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -40,6 +41,7 @@ type
     procedure Image1MouseLeave(Sender: TObject);
     procedure Image1MouseEnter(Sender: TObject);
     procedure ButtonClearClick(Sender: TObject);
+    procedure ButtonSelectONNXClick(Sender: TObject);
 
 
   private
@@ -47,12 +49,14 @@ type
     drawingNow: Boolean;
     _isPictureEmpty: boolean;
     _value: Integer;
+    _ONNXDir: String;
     const COLOR_BACKGROUND: TColor = clBackground;
     const COLOR_PEN: TColor = clOlive;
     procedure ClearPicture();
     function getPictureData(): TArray<Byte>;
   public
     { Public declarations }
+    property onnxDirectory: string read _ONNXDir;
     property isPictureEmpty: boolean read _isPictureEmpty;
     property PictureData: TArray<Byte> read getPictureData;
     property RecognizedValue: Integer write _value;
@@ -66,16 +70,20 @@ implementation
 {$R *.dfm}
 
 uses
+  FileCtrl,
   WrapDelphiVCL,
   System.Rtti,
   System.Threading,
   System.Math;
 
+const
+  defaultDir = 'c:\Users\KoRiF\Documents\Embarcadero\Studio\Projects\AI\ONNX\Zoo\models\vision\classification\mnist\model\mnist\';
+
 procedure TForm1.btnRunClick(Sender: TObject);
 var
   pictBytes : TBytesStream;
 begin
-  passPicture();
+  //passPicture();
   PythonEngine.ExecString(UTF8Encode(sePythonCode.Text));
   ShowMessage('Recognized value is: ' + IntToStr(_value));
 end;
@@ -84,6 +92,19 @@ procedure TForm1.ButtonClearClick(Sender: TObject);
 begin
   ClearPicture();
   _isPictureEmpty := True;
+end;
+
+procedure TForm1.ButtonSelectONNXClick(Sender: TObject);
+var directories: TArray<String>;
+begin
+  directories := TArray<String>.Create();
+  var ok := FileCtrl.SelectDirectory(_ONNXDir,directories, [], 'Select ONNX Model Directory'); //TSelectDirFileDlgOpts
+  if ok then
+  begin
+    if (Length(directories)>0) and DirectoryExists(directories[0]) then
+      _ONNXDir := directories[0];
+  end;
+
 end;
 
 procedure TForm1.ClearPicture;
@@ -106,6 +127,7 @@ begin
   _isPictureEmpty := true;
 
   Image1.Canvas.Pen.Width := 10;
+  _ONNXDir := defaultDir;
 end;
 
 function TForm1.getPictureData: TArray<Byte>;
