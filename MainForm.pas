@@ -104,6 +104,8 @@ begin
   drawingNow := False;
   ClearPicture();
   _isPictureEmpty := true;
+
+  Image1.Canvas.Pen.Width := 10;
 end;
 
 function TForm1.getPictureData: TArray<Byte>;
