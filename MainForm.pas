@@ -46,6 +46,7 @@ type
     { Private declarations }
     drawingNow: Boolean;
     _isPictureEmpty: boolean;
+    _value: Integer;
     const COLOR_BACKGROUND: TColor = clBackground;
     const COLOR_PEN: TColor = clOlive;
     procedure ClearPicture();
@@ -55,6 +56,7 @@ type
     { Public declarations }
     property isPictureEmpty: boolean read _isPictureEmpty;
     property PictureData: TArray<Byte> read getPictureData;
+    property RecognizedValue: Integer write _value;
   end;
 
 var
@@ -76,6 +78,7 @@ var
 begin
   passPicture();
   PythonEngine.ExecString(UTF8Encode(sePythonCode.Text));
+  ShowMessage('Recognized value is: ' + IntToStr(_value));
 end;
 
 procedure TForm1.ButtonClearClick(Sender: TObject);
