@@ -286,8 +286,6 @@ object Form1: TForm1
           Width = 954
         end>
       ParentFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 73
     end
     object mePythonOutput: TMemo
       Left = 1
@@ -302,7 +300,6 @@ object Form1: TForm1
       Font.Style = []
       ParentFont = False
       TabOrder = 1
-      ExplicitTop = 16
     end
   end
   object SynPythonSyn: TSynPythonSyn
