@@ -77,12 +77,17 @@ uses
   System.Threading,
   System.Math;
 
+type
+  TDelphiByteArray = Class
+    data: TArray<Byte>;
+    constructor Create(bytestream: TBytesStream);
+    class function getClassRTTI(): TRttiStructuredType;  static;
+  End;
+
 const
   defaultDir = 'c:\Users\KoRiF\Documents\Embarcadero\Studio\Projects\AI\ONNX\Zoo\models\vision\classification\mnist\model\mnist\';
 
 procedure TForm1.btnRunClick(Sender: TObject);
-var
-  pictBytes : TBytesStream;
 begin
   //passPicture();
   PythonEngine.ExecString(UTF8Encode(sePythonCode.Text));
@@ -182,7 +187,10 @@ begin
   Image1.Picture.SaveToStream(pictBytes);
 
   var databytesarray := TDelphiByteArray.Create(pictBytes);
-  var Py := PyDelphiWrapper1.WrapRecord(@databytesarray, TDelphiByteArray.getClassRTTI());
+
+  //does not works for Record: .WrapRecord(@databytesarray, TDelphiByteArray.getClassRTTI());
+  var Py := PyDelphiWrapper1.Wrap(databytesarray);
+
   PythonModule1.SetVar('image_data', Py);
   PythonEngine.Py_DECREF(Py);
 end;
@@ -191,18 +199,18 @@ procedure TForm1.PythonEngineBeforeLoad(Sender: TObject);
 begin
   PythonEngine.SetPythonHome('C:\ProgramData\Anaconda3');
 end;
-function TForm1.rescalePicture(bytes: TBytesStream): boolean;
-const
-  NROWS = 280;
-  NCOLUMNS= 280;
-var
-  line: TArray<Byte>;
-  lines: TArray<TArray<Byte>>;
+
+{ TDelphiByteArray }
+
+constructor TDelphiByteArray.Create(bytestream: TBytesStream);
 begin
-  var buf := bytes.Bytes;
-  //lines := TArray<TArray<Byte>>.;
-  ;
-  RESULT := True;
+  inherited Create;
+  data := bytestream.Bytes;
+end;
+
+class function TDelphiByteArray.getClassRTTI: TRttiStructuredType;
+begin
+  RESULT := TRttiContext.Create.GetType(TypeInfo(TDelphiByteArray)) as TRttiStructuredType
 end;
 
 begin
