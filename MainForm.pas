@@ -49,7 +49,6 @@ type
     const COLOR_BACKGROUND: TColor = clBackground;
     const COLOR_PEN: TColor = clOlive;
     procedure ClearPicture();
-    procedure passPicture();
     function getPictureData(): TArray<Byte>;
   public
     { Public declarations }
@@ -147,35 +146,9 @@ begin
   drawingNow := False;
 end;
 
-procedure TForm1.passPicture();
-var
-  pictBytes : TBytesStream;
-begin
-  pictBytes := TBytesStream.Create;
-  Image1.Picture.SaveToStream(pictBytes);
-
-  var databytesarray := TDelphiByteArray.Create(pictBytes);
-  var Py := PyDelphiWrapper1.WrapRecord(@databytesarray, TDelphiByteArray.getClassRTTI());
-  PythonModule1.SetVar('image_data', Py);
-  PythonEngine.Py_DECREF(Py);
-end;
-
 procedure TForm1.PythonEngineBeforeLoad(Sender: TObject);
 begin
   PythonEngine.SetPythonHome('C:\ProgramData\Anaconda3');
-end;
-function TForm1.rescalePicture(bytes: TBytesStream): boolean;
-const
-  NROWS = 280;
-  NCOLUMNS= 280;
-var
-  line: TArray<Byte>;
-  lines: TArray<TArray<Byte>>;
-begin
-  var buf := bytes.Bytes;
-  //lines := TArray<TArray<Byte>>.;
-  ;
-  RESULT := True;
 end;
 
 begin
