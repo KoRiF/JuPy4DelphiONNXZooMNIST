@@ -84,7 +84,19 @@ var
   pictBytes : TBytesStream;
 begin
   //passPicture();
-  PythonEngine.ExecString(UTF8Encode(sePythonCode.Text));
+  try
+    PythonEngine.ExecString(UTF8Encode(sePythonCode.Text));
+  except on Ex: EPySystemExit do
+    begin
+      var code := Ex.EValue;
+      if (code='') or (code='0') then
+      begin
+        ShowMessage('Diagnostic success');
+        exit;
+      end
+      else raise Ex;
+    end;
+  end;
   ShowMessage('Recognized value is: ' + IntToStr(_value));
 end;
 
