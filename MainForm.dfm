@@ -103,36 +103,153 @@ object Form1: TForm1
       Lines.Strings = (
         '# -*- coding: utf-8 -*-'
         '"""'
-        'Created on Thu Jan 20 08:04:53 2022'
+        'Created on Sun Jan 30 21:29:02 2022'
         ''
         '@author: KoRiF'
         '"""'
-        ''
-        'import numpy as np'
-        'import onnx'
-        'from onnx import numpy_helper'
         'import os'
         'import glob'
         ''
-        'os.environ['#39'TF_CPP_MIN_LOG_LEVEL'#39'] = '#39'3'#39' #avoid TF crash '
-        'import tensorflow as backend'
+        'import numpy as np'
+        'import onnx'
         ''
-        'import warnings'
-        'import onnx_tf as xtf'
-        'from onnx_tf.backend import prepare'
+        'class ONNXMNIST_Recognizer:'
+        '    def __init__(self, directory):'
+        '        self.path_to_model = directory'
+        
+          '        self.model_filename = os.path.join(self.path_to_model, '#39 +
+          'model.onnx'#39' )'
+        '        # onnx_model is an in-memory ModelProto'
+        '        self.onnx_model = onnx.load(self.model_filename)'
+        '        return'
+        ''
+        '    def image2input(self, image):'
+        '        import cv2'
+        '        if isinstance(image, str):'
+        '            image = cv2.imread(image) #'#39'input.png'#39
+        '        elif not isinstance(image, np.ndarray):'
+        '            image = np.array(image)'
+        '        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)'
+        '        gray = cv2.resize(gray, (28,28)).astype(np.float32)/255'
+        '        return np.reshape(gray, (1,1,28,28))'
+        ''
+        '    def run_session(self, model_inputs):'
+        '        pass'
+        ''
+        ''
+        '    def recognize(self, picture_data):'
+        '        from io import BytesIO'
+        '        imagedata = BytesIO(bytes(picture_data))'
+        ''
+        '        from PIL import Image'
+        '        img = Image.open(imagedata)'
+        '        img.show()'
+        ''
+        '        img = self.image2input(img)'
+        ''
+        '        inputs = [img]'
+        ''
+        '        outputs = self.run_session(inputs)'
+        '        print(outputs)'
+        '        print( "recognized as: ", np.argmax(outputs) )'
+        '        return int(np.argmax(outputs))'
+        ''
+        '    def selfdiagnostic(self):'
+        '        from onnx import numpy_helper'
+        '        test_data_dir = '#39'test_data_set_{ix}'#39
+        
+          '        test_num = len(glob.glob(os.path.join(self.path_to_model' +
+          ', test_data_dir.format(ix='#39'*'#39'))))'
+        ''
+        '        for no in range(test_num):'
+        
+          '            print('#39'---------------------------------------------' +
+          '---------\n'#39')'
+        ''
+        
+          '            test_data_path = os.path.join(self.path_to_model, te' +
+          'st_data_dir.format(ix=no))'
+        
+          '            print('#39'Experiment for dataset from "{folder}"'#39'.forma' +
+          't(folder=test_data_path))'
+        ''
+        '            # Load inputs'
+        '            inputs = []'
+        
+          '            inputs_num = len(glob.glob(os.path.join(test_data_pa' +
+          'th, '#39'input_*.pb'#39')))'
+        '            for i in range(inputs_num):'
+        
+          '                input_file = os.path.join(test_data_path, '#39'input' +
+          '_{}.pb'#39'.format(i))'
+        '                tensor = onnx.TensorProto()'
+        '                with open(input_file, '#39'rb'#39') as f:'
+        '                    tensor.ParseFromString(f.read())'
+        '                inputs.append(numpy_helper.to_array(tensor))'
+        ''
+        '            # Load reference outputs'
+        '            ref_outputs = []'
+        
+          '            ref_outputs_num = len(glob.glob(os.path.join(test_da' +
+          'ta_path, '#39'output_*.pb'#39')))'
+        '            for i in range(ref_outputs_num):'
+        
+          '                output_file = os.path.join(test_data_path, '#39'outp' +
+          'ut_{}.pb'#39'.format(i))'
+        '                tensor = onnx.TensorProto()'
+        '                with open(output_file, '#39'rb'#39') as f:'
+        '                    tensor.ParseFromString(f.read())'
+        
+          '                ref_outputs.append(numpy_helper.to_array(tensor)' +
+          ')'
+        ''
+        '            # Run the model on the backend'
+        ''
+        '            #outputs = list(backend.run_model(model, inputs))'
+        '            outputs = self.run_session(inputs)'
+        ''
+        ''
+        '            # Compare the results with reference outputs.'
+        '            for ref_o, o in zip(ref_outputs, outputs):'
+        '                print("result:", o)'
+        '                print("reference output:", ref_o)'
+        '                np.testing.assert_almost_equal(ref_o, o, 0)'
+        
+          '            print( np.argmax(ref_outputs), "recognized as: ", np' +
+          '.argmax(outputs) )'
+        '            return'
+        ''
+        '    def createRecognizer(recognizer_name, directory):'
+        '        if recognizer_name == '#39'TF'#39':'
+        
+          '            recognizer = TensorFlowONNXMNIST_Recognizer(director' +
+          'y)'
+        '        #elif ...'
+        '        else:'
+        '            recognizer = RuntimeONNXMNIST_Recognizer(directory)'
+        '        return recognizer'
         ''
         ''
         ''
-        'import cv2'
         ''
-        'def image2input(image):'
-        '    if isinstance(image, str):'
-        '        image = cv2.imread(image) #'#39'input.png'#39
-        '    elif not isinstance(image, np.ndarray):'
-        '        image = np.array(image)    '
-        '    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)'
-        '    gray = cv2.resize(gray, (28,28)).astype(np.float32)/255'
-        '    return np.reshape(gray, (1,1,28,28))'
+        ''
+        'class RuntimeONNXMNIST_Recognizer(ONNXMNIST_Recognizer):'
+        '    def run_session(self, model_inputs):'
+        '        from onnxruntime import InferenceSession'
+        
+          '        sess = InferenceSession(self.onnx_model.SerializeToStrin' +
+          'g())'
+        '        return sess.run(None, {'#39'Input3'#39' : model_inputs[0]})'
+        ''
+        ''
+        'class TensorFlowONNXMNIST_Recognizer(ONNXMNIST_Recognizer):'
+        '    def run_session(self, model_inputs):'
+        '        #import onnx_tf as xtf'
+        '        from onnx_tf.backend import prepare'
+        '        tf_rep = prepare(self.onnx_model)'
+        '        return tf_rep.run(model_inputs)'
+        ''
+        ''
         ''
         'diagnostic = True'
         ''
@@ -142,104 +259,20 @@ object Form1: TForm1
         'diagnostic = delphi_form.isPictureEmpty'
         ''
         ''
-        ''
-        'def selfdiagnostic():'
-        '    test_data_dir = '#39'test_data_set_{ix}'#39
+        'backend = delphi_form.backendSwitchTag'
+        'path_to_model = delphi_form.onnxDirectory'
         
-          '    test_num = len(glob.glob(os.path.join(path_to_model, test_da' +
-          'ta_dir.format(ix='#39'*'#39'))))'
-        '    '
-        '    for no in range(test_num):'
-        
-          '        print('#39'-------------------------------------------------' +
-          '-----\n'#39')'
-        '    '
-        
-          '        test_data_path = os.path.join( path_to_model, test_data_' +
-          'dir.format(ix=no))'
-        
-          '        print('#39'Experiment for dataset from "{folder}"'#39'.format(fo' +
-          'lder=test_data_path))'
-        '        '
-        '        # Load inputs'
-        '        inputs = []'
-        
-          '        inputs_num = len(glob.glob(os.path.join(test_data_path, ' +
-          #39'input_*.pb'#39')))'
-        '        for i in range(inputs_num):'
-        
-          '            input_file = os.path.join(test_data_path, '#39'input_{}.' +
-          'pb'#39'.format(i))'
-        '            tensor = onnx.TensorProto()'
-        '            with open(input_file, '#39'rb'#39') as f:'
-        '                tensor.ParseFromString(f.read())'
-        '            inputs.append(numpy_helper.to_array(tensor))'
-        '        '
-        '        # Load reference outputs'
-        '        ref_outputs = []'
-        
-          '        ref_outputs_num = len(glob.glob(os.path.join(test_data_p' +
-          'ath, '#39'output_*.pb'#39')))'
-        '        for i in range(ref_outputs_num):'
-        
-          '            output_file = os.path.join(test_data_path, '#39'output_{' +
-          '}.pb'#39'.format(i))'
-        '            tensor = onnx.TensorProto()'
-        '            with open(output_file, '#39'rb'#39') as f:'
-        '                tensor.ParseFromString(f.read())'
-        '            ref_outputs.append(numpy_helper.to_array(tensor))'
-        '        '
-        '        # Run the model on the backend'
-        '        '
-        '        #outputs = list(backend.run_model(model, inputs))'
-        '        outputs = tf_rep.run(inputs)'
-        '        '
-        '        '
-        '        # Compare the results with reference outputs.'
-        '        for ref_o, o in zip(ref_outputs, outputs):'
-        '            print("result:", o)'
-        '            print("reference output:", ref_o)'
-        '            np.testing.assert_almost_equal(ref_o, o, 0)'
-        
-          '        print( np.argmax(ref_outputs), "recognized as: ", np.arg' +
-          'max(outputs) )    '
-        '        '
-        'path_to_model = delphi_form.onnxDirectory '
-        
-          '#r'#39'c:\Users\KoRiF\Documents\Embarcadero\Studio\Projects\AI\ONNX\' +
-          'Zoo\models\vision\classification\mnist\model\mnist'#39
-        'model_filename = os.path.join( path_to_model, '#39'model.onnx'#39' )'
-        '# onnx_model is an in-memory ModelProto'
-        'onnx_model = onnx.load(model_filename)'
-        ''
-        'tf_rep = prepare(onnx_model)'
+          'recognizer = ONNXMNIST_Recognizer.createRecognizer(backend, path' +
+          '_to_model)'
         ''
         'if diagnostic:'
-        '    print(tf_rep.inputs) # Input nodes to the model'
-        '    print('#39'-----'#39')'
-        '    print(tf_rep.outputs) # Output nodes from the model'
-        '    print('#39'-----'#39')'
-        '    print(tf_rep.tensor_dict) # All nodes in the model'
         '    selfdiagnostic()'
         '    exit'
         ''
-        'from io import BytesIO'
-        'imagedata = BytesIO(bytes(delphi_form.PictureData))'
-        ''
-        'from PIL import Image'
-        'img = Image.open(imagedata)'
-        'img.show()'
-        ''
-        'img = image2input(img)'
-        ''
-        'inputs = [img]'
-        'outputs = tf_rep.run(inputs) '
-        'print(outputs)'
-        'print( "recognized as: ", np.argmax(outputs) )'
-        ''
-        'delphi_form.RecognizedValue =  int(np.argmax(outputs))'
-        ''
-        '')
+        'mnist_digit_pict = delphi_form.PictureData'
+        
+          'delphi_form.RecognizedValue =  recognizer.recognize(mnist_digit_' +
+          'pict)')
     end
     object ButtonClear: TButton
       Left = 0
@@ -286,8 +319,6 @@ object Form1: TForm1
           Width = 954
         end>
       ParentFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 73
     end
     object mePythonOutput: TMemo
       Left = 1
@@ -302,7 +333,6 @@ object Form1: TForm1
       Font.Style = []
       ParentFont = False
       TabOrder = 1
-      ExplicitTop = 16
     end
   end
   object SynPythonSyn: TSynPythonSyn

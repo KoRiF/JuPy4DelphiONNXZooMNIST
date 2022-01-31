@@ -48,6 +48,7 @@ type
     { Private declarations }
     drawingNow: Boolean;
     _isPictureEmpty: boolean;
+    _backendSwitchTag: string;
     _value: Integer;
     _ONNXDir: String;
     const COLOR_BACKGROUND: TColor = clBackground;
@@ -59,6 +60,7 @@ type
     property onnxDirectory: string read _ONNXDir;
     property isPictureEmpty: boolean read _isPictureEmpty;
     property PictureData: TArray<Byte> read getPictureData;
+    property backendSwitchTag: string read _backendSwitchTag;
     property RecognizedValue: Integer write _value;
   end;
 
@@ -140,6 +142,7 @@ begin
 
   Image1.Canvas.Pen.Width := 10;
   _ONNXDir := defaultDir;
+  _backendSwitchTag := 'ONNX Runtime';
 end;
 
 function TForm1.getPictureData: TArray<Byte>;
