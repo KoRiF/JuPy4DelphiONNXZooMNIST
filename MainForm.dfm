@@ -292,6 +292,18 @@ object Form1: TForm1
       TabOrder = 3
       OnClick = ButtonSelectONNXClick
     end
+    object ComboBox1: TComboBox
+      Left = 312
+      Top = 282
+      Width = 145
+      Height = 21
+      TabOrder = 4
+      Text = 'Select ML backend...'
+      OnChange = ComboBox1Change
+      Items.Strings = (
+        'ONNX Runtime'
+        'TensorFlow')
+    end
   end
   object Panel2: TPanel
     Left = 0

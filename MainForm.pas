@@ -29,6 +29,7 @@ type
     PyDelphiWrapper1: TPyDelphiWrapper;
     PythonModule1: TPythonModule;
     ButtonSelectONNX: TButton;
+    ComboBox1: TComboBox;
     procedure btnRunClick(Sender: TObject);
     procedure PythonEngineBeforeLoad(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -42,6 +43,7 @@ type
     procedure Image1MouseEnter(Sender: TObject);
     procedure ButtonClearClick(Sender: TObject);
     procedure ButtonSelectONNXClick(Sender: TObject);
+    procedure ComboBox1Change(Sender: TObject);
 
 
   private
@@ -128,6 +130,17 @@ begin
   Image1.Canvas.FillRect(Rect(0,0,Image1.Height,Image1.Width));
   Image1.Canvas.Pen.Color := COLOR_PEN;
   Image1.Canvas.Brush.Color := COLOR_PEN;
+end;
+
+procedure TForm1.ComboBox1Change(Sender: TObject);
+begin
+  //select ML backend for run ONNX model
+  case ComboBox1.ItemIndex of
+  1: _backendSwitchTag := 'TF';
+  //... add other options here ...
+  else
+     _backendSwitchTag := 'runtime';
+  end;
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
