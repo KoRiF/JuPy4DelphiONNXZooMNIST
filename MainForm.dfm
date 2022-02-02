@@ -51,6 +51,7 @@ object Form1: TForm1
     Height = 304
     Align = alTop
     TabOrder = 1
+    ExplicitTop = 24
     object PaintBox1: TPaintBox
       Left = 0
       Top = 0
@@ -85,7 +86,7 @@ object Form1: TForm1
       Left = 280
       Top = 0
       Width = 675
-      Height = 279
+      Height = 133
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
@@ -251,28 +252,7 @@ object Form1: TForm1
         ''
         ''
         ''
-        'diagnostic = True'
-        ''
-        ''
-        'from delphi_module import delphi_form'
-        ''
-        'diagnostic = delphi_form.isPictureEmpty'
-        ''
-        ''
-        'backend = delphi_form.backendSwitchTag'
-        'path_to_model = delphi_form.onnxDirectory'
-        
-          'recognizer = ONNXMNIST_Recognizer.createRecognizer(backend, path' +
-          '_to_model)'
-        ''
-        'if diagnostic:'
-        '    selfdiagnostic()'
-        '    exit'
-        ''
-        'mnist_digit_pict = delphi_form.PictureData'
-        
-          'delphi_form.RecognizedValue =  recognizer.recognize(mnist_digit_' +
-          'pict)')
+        '')
     end
     object ButtonClear: TButton
       Left = 0
@@ -303,6 +283,49 @@ object Form1: TForm1
       Items.Strings = (
         'ONNX Runtime'
         'TensorFlow')
+    end
+    object SynEdit1: TSynEdit
+      Left = 286
+      Top = 139
+      Width = 675
+      Height = 133
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Consolas'
+      Font.Style = []
+      Font.Quality = fqClearTypeNatural
+      TabOrder = 5
+      UseCodeFolding = False
+      Gutter.Font.Charset = DEFAULT_CHARSET
+      Gutter.Font.Color = clWindowText
+      Gutter.Font.Height = -11
+      Gutter.Font.Name = 'Consolas'
+      Gutter.Font.Style = []
+      Highlighter = SynPythonSyn
+      Lines.Strings = (
+        'diagnostic = True'
+        ''
+        ''
+        'from delphi_module import delphi_form'
+        ''
+        'diagnostic = delphi_form.isPictureEmpty'
+        ''
+        ''
+        'backend = delphi_form.backendSwitchTag'
+        'path_to_model = delphi_form.onnxDirectory'
+        
+          'recognizer = ONNXMNIST_Recognizer.createRecognizer(backend, path' +
+          '_to_model)'
+        ''
+        'if diagnostic:'
+        '    recognizer.selfdiagnostic()'
+        '    exit'
+        ''
+        'mnist_digit_pict = delphi_form.PictureData'
+        
+          'delphi_form.RecognizedValue =  recognizer.recognize(mnist_digit_' +
+          'pict)')
     end
   end
   object Panel2: TPanel

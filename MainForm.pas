@@ -30,6 +30,7 @@ type
     PythonModule1: TPythonModule;
     ButtonSelectONNX: TButton;
     ComboBox1: TComboBox;
+    SynEdit1: TSynEdit;
     procedure btnRunClick(Sender: TObject);
     procedure PythonEngineBeforeLoad(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -90,6 +91,7 @@ begin
   //passPicture();
   try
     PythonEngine.ExecString(UTF8Encode(sePythonCode.Text));
+    PythonEngine.ExecString(UTF8Encode(SynEdit1.Text))
   except on Ex: EPySystemExit do
     begin
       var code := Ex.EValue;
