@@ -51,7 +51,6 @@ object Form1: TForm1
     Height = 304
     Align = alTop
     TabOrder = 1
-    ExplicitTop = 24
     object PaintBox1: TPaintBox
       Left = 0
       Top = 0
@@ -305,12 +304,19 @@ object Form1: TForm1
       Highlighter = SynPythonSyn
       Lines.Strings = (
         'diagnostic = True'
-        ''
-        ''
+        #39#39#39'{'
+        '"""!'
+        '}'#39#39#39
         'from delphi_module import delphi_form'
         ''
         'diagnostic = delphi_form.isPictureEmpty'
+        #39#39#39'{'
+        '!"""'
+        '}'#39#39#39
         ''
+        #39#39#39'$'
+        'diagnostic = true'
+        '$'#39#39#39
         ''
         'backend = delphi_form.backendSwitchTag'
         'path_to_model = delphi_form.onnxDirectory'
@@ -326,6 +332,15 @@ object Form1: TForm1
         
           'delphi_form.RecognizedValue =  recognizer.recognize(mnist_digit_' +
           'pict)')
+    end
+    object Button1: TButton
+      Left = 478
+      Top = 273
+      Width = 92
+      Height = 25
+      Caption = 'Recomment code'
+      TabOrder = 6
+      OnClick = Button1Click
     end
   end
   object Panel2: TPanel

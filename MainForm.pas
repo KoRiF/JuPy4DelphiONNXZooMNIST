@@ -31,6 +31,7 @@ type
     ButtonSelectONNX: TButton;
     ComboBox1: TComboBox;
     SynEdit1: TSynEdit;
+    Button1: TButton;
     procedure btnRunClick(Sender: TObject);
     procedure PythonEngineBeforeLoad(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -45,6 +46,7 @@ type
     procedure ButtonClearClick(Sender: TObject);
     procedure ButtonSelectONNXClick(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
 
 
   private
@@ -79,7 +81,8 @@ uses
   WrapDelphiVCL,
   System.Rtti,
   System.Threading,
-  System.Math;
+  System.Math
+  , UnitPy4DUtils;
 
 const
   defaultDir = 'c:\Users\KoRiF\Documents\Embarcadero\Studio\Projects\AI\ONNX\Zoo\models\vision\classification\mnist\model\mnist\';
@@ -104,6 +107,14 @@ begin
     end;
   end;
   ShowMessage('Recognized value is: ' + IntToStr(_value));
+end;
+
+procedure TForm1.Button1Click(Sender: TObject);
+begin
+  if _isPictureEmpty then
+    SynEdit1.Text := excludeDelphiInteraction(SynEdit1.Text)
+  else
+    SynEdit1.Text := includeDelphiInteraction(SynEdit1.Text);
 end;
 
 procedure TForm1.ButtonClearClick(Sender: TObject);
