@@ -303,7 +303,9 @@ object Form1: TForm1
       Gutter.Font.Style = []
       Highlighter = SynPythonSyn
       Lines.Strings = (
+        #39#39#39'$'
         'diagnostic = True'
+        '$'#39#39#39
         #39#39#39'{'
         '"""!'
         '}'#39#39#39
@@ -315,11 +317,20 @@ object Form1: TForm1
         '}'#39#39#39
         ''
         #39#39#39'$'
-        'diagnostic = true'
+        'backend = '#39'default'#39' #use ONNX Runtime'
+        'path_to_model = '#39'?'#39
         '$'#39#39#39
         ''
+        ''
+        #39#39#39'{'
+        '"""!'
+        '}'#39#39#39
         'backend = delphi_form.backendSwitchTag'
         'path_to_model = delphi_form.onnxDirectory'
+        #39#39#39'{'
+        '!"""'
+        '}'#39#39#39
+        ''
         
           'recognizer = ONNXMNIST_Recognizer.createRecognizer(backend, path' +
           '_to_model)'
@@ -327,15 +338,20 @@ object Form1: TForm1
         'if diagnostic:'
         '    recognizer.selfdiagnostic()'
         '    exit'
-        ''
+        #39#39#39'{'
+        '"""!'
+        '}'#39#39#39
         'mnist_digit_pict = delphi_form.PictureData'
         
           'delphi_form.RecognizedValue =  recognizer.recognize(mnist_digit_' +
-          'pict)')
+          'pict)'
+        #39#39#39'{'
+        '!"""'
+        '}'#39#39#39)
     end
     object Button1: TButton
-      Left = 478
-      Top = 273
+      Left = 679
+      Top = 153
       Width = 92
       Height = 25
       Caption = 'Recomment code'
