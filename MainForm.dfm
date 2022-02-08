@@ -199,6 +199,7 @@ object Form1: TForm1
             '    ws.send(json.dumps(send_execute_request(piece)))'
             '    $'#39#39#39
             ''
+            #39#39#39'$'
             
               '# We ignore all the other messages, we just get the code executi' +
               'on output'
@@ -212,7 +213,8 @@ object Form1: TForm1
             '        msg_type = rsp["msg_type"]'
             '    print(rsp["content"]["text"])'
             ''
-            'ws.close()')
+            'ws.close()'
+            '$'#39#39#39)
         end
         object btnRun: TButton
           Left = 0
