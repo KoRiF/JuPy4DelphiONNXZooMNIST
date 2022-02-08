@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 0
   Top = 0
-  Caption = 'P4D ONNX TF MNIST Demo'
-  ClientHeight = 507
-  ClientWidth = 956
+  Caption = 'JuPy4Delphi with ONNX Demo'
+  ClientHeight = 599
+  ClientWidth = 942
   Color = clBtnFace
   CustomTitleBar.CaptionAlignment = taCenter
   Font.Charset = DEFAULT_CHARSET
@@ -16,361 +16,27 @@ object Form1: TForm1
   TextHeight = 13
   object Splitter1: TSplitter
     Left = 0
-    Top = 329
-    Width = 956
-    Height = 0
+    Top = 0
+    Width = 942
+    Height = 3
     Cursor = crVSplit
     Align = alTop
     ResizeStyle = rsUpdate
-    ExplicitTop = 25
-  end
-  object HeaderControl1: THeaderControl
-    Left = 0
-    Top = 0
-    Width = 956
-    Height = 25
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
-    Sections = <
-      item
-        Alignment = taCenter
-        AutoSize = True
-        ImageIndex = -1
-        Text = 'Python Source code'
-        Width = 956
-      end>
-    ParentFont = False
-  end
-  object Panel1: TPanel
-    Left = 0
-    Top = 25
-    Width = 956
-    Height = 304
-    Align = alTop
-    TabOrder = 1
-    object PaintBox1: TPaintBox
-      Left = 0
-      Top = 0
-      Width = 280
-      Height = 280
-      Color = 14822282
-      ParentColor = False
-    end
-    object Image1: TImage
-      Left = 0
-      Top = 0
-      Width = 280
-      Height = 280
-      Cursor = crCross
-      Proportional = True
-      OnMouseDown = Image1MouseDown
-      OnMouseEnter = Image1MouseEnter
-      OnMouseLeave = Image1MouseLeave
-      OnMouseMove = Image1MouseMove
-      OnMouseUp = Image1MouseUp
-    end
-    object btnRun: TButton
-      Left = 169
-      Top = 283
-      Width = 105
-      Height = 20
-      Caption = 'Run Recognition'
-      TabOrder = 0
-      OnClick = btnRunClick
-    end
-    object sePythonCode: TSynEdit
-      Left = 280
-      Top = 0
-      Width = 675
-      Height = 133
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -13
-      Font.Name = 'Consolas'
-      Font.Style = []
-      Font.Quality = fqClearTypeNatural
-      TabOrder = 1
-      UseCodeFolding = False
-      Gutter.Font.Charset = DEFAULT_CHARSET
-      Gutter.Font.Color = clWindowText
-      Gutter.Font.Height = -11
-      Gutter.Font.Name = 'Consolas'
-      Gutter.Font.Style = []
-      Highlighter = SynPythonSyn
-      Lines.Strings = (
-        '# -*- coding: utf-8 -*-'
-        '"""'
-        'Created on Sun Jan 30 21:29:02 2022'
-        ''
-        '@author: KoRiF'
-        '"""'
-        'import os'
-        'import glob'
-        ''
-        'import numpy as np'
-        'import onnx'
-        ''
-        'class ONNXMNIST_Recognizer:'
-        '    def __init__(self, directory):'
-        '        self.path_to_model = directory'
-        
-          '        self.model_filename = os.path.join(self.path_to_model, '#39 +
-          'model.onnx'#39' )'
-        '        # onnx_model is an in-memory ModelProto'
-        '        self.onnx_model = onnx.load(self.model_filename)'
-        '        return'
-        ''
-        '    def image2input(self, image):'
-        '        import cv2'
-        '        if isinstance(image, str):'
-        '            image = cv2.imread(image) #'#39'input.png'#39
-        '        elif not isinstance(image, np.ndarray):'
-        '            image = np.array(image)'
-        '        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)'
-        '        gray = cv2.resize(gray, (28,28)).astype(np.float32)/255'
-        '        return np.reshape(gray, (1,1,28,28))'
-        ''
-        '    def run_session(self, model_inputs):'
-        '        pass'
-        ''
-        ''
-        '    def recognize(self, picture_data):'
-        '        from io import BytesIO'
-        '        imagedata = BytesIO(bytes(picture_data))'
-        ''
-        '        from PIL import Image'
-        '        img = Image.open(imagedata)'
-        '        img.show()'
-        ''
-        '        img = self.image2input(img)'
-        ''
-        '        inputs = [img]'
-        ''
-        '        outputs = self.run_session(inputs)'
-        '        print(outputs)'
-        '        print( "recognized as: ", np.argmax(outputs) )'
-        '        return int(np.argmax(outputs))'
-        ''
-        '    def selfdiagnostic(self):'
-        '        from onnx import numpy_helper'
-        '        test_data_dir = '#39'test_data_set_{ix}'#39
-        
-          '        test_num = len(glob.glob(os.path.join(self.path_to_model' +
-          ', test_data_dir.format(ix='#39'*'#39'))))'
-        ''
-        '        for no in range(test_num):'
-        
-          '            print('#39'---------------------------------------------' +
-          '---------\n'#39')'
-        ''
-        
-          '            test_data_path = os.path.join(self.path_to_model, te' +
-          'st_data_dir.format(ix=no))'
-        
-          '            print('#39'Experiment for dataset from "{folder}"'#39'.forma' +
-          't(folder=test_data_path))'
-        ''
-        '            # Load inputs'
-        '            inputs = []'
-        
-          '            inputs_num = len(glob.glob(os.path.join(test_data_pa' +
-          'th, '#39'input_*.pb'#39')))'
-        '            for i in range(inputs_num):'
-        
-          '                input_file = os.path.join(test_data_path, '#39'input' +
-          '_{}.pb'#39'.format(i))'
-        '                tensor = onnx.TensorProto()'
-        '                with open(input_file, '#39'rb'#39') as f:'
-        '                    tensor.ParseFromString(f.read())'
-        '                inputs.append(numpy_helper.to_array(tensor))'
-        ''
-        '            # Load reference outputs'
-        '            ref_outputs = []'
-        
-          '            ref_outputs_num = len(glob.glob(os.path.join(test_da' +
-          'ta_path, '#39'output_*.pb'#39')))'
-        '            for i in range(ref_outputs_num):'
-        
-          '                output_file = os.path.join(test_data_path, '#39'outp' +
-          'ut_{}.pb'#39'.format(i))'
-        '                tensor = onnx.TensorProto()'
-        '                with open(output_file, '#39'rb'#39') as f:'
-        '                    tensor.ParseFromString(f.read())'
-        
-          '                ref_outputs.append(numpy_helper.to_array(tensor)' +
-          ')'
-        ''
-        '            # Run the model on the backend'
-        ''
-        '            #outputs = list(backend.run_model(model, inputs))'
-        '            outputs = self.run_session(inputs)'
-        ''
-        ''
-        '            # Compare the results with reference outputs.'
-        '            for ref_o, o in zip(ref_outputs, outputs):'
-        '                print("result:", o)'
-        '                print("reference output:", ref_o)'
-        '                np.testing.assert_almost_equal(ref_o, o, 0)'
-        
-          '            print( np.argmax(ref_outputs), "recognized as: ", np' +
-          '.argmax(outputs) )'
-        '            return'
-        ''
-        '    def createRecognizer(recognizer_name, directory):'
-        '        if recognizer_name == '#39'TF'#39':'
-        
-          '            recognizer = TensorFlowONNXMNIST_Recognizer(director' +
-          'y)'
-        '        #elif ...'
-        '        else:'
-        '            recognizer = RuntimeONNXMNIST_Recognizer(directory)'
-        '        return recognizer'
-        ''
-        ''
-        ''
-        ''
-        ''
-        'class RuntimeONNXMNIST_Recognizer(ONNXMNIST_Recognizer):'
-        '    def run_session(self, model_inputs):'
-        '        from onnxruntime import InferenceSession'
-        
-          '        sess = InferenceSession(self.onnx_model.SerializeToStrin' +
-          'g())'
-        '        return sess.run(None, {'#39'Input3'#39' : model_inputs[0]})'
-        ''
-        ''
-        'class TensorFlowONNXMNIST_Recognizer(ONNXMNIST_Recognizer):'
-        '    def run_session(self, model_inputs):'
-        '        #import onnx_tf as xtf'
-        '        from onnx_tf.backend import prepare'
-        '        tf_rep = prepare(self.onnx_model)'
-        '        return tf_rep.run(model_inputs)'
-        ''
-        ''
-        ''
-        '')
-    end
-    object ButtonClear: TButton
-      Left = 0
-      Top = 283
-      Width = 105
-      Height = 20
-      Caption = 'Clear'
-      TabOrder = 2
-      OnClick = ButtonClearClick
-    end
-    object ButtonSelectONNX: TButton
-      Left = 576
-      Top = 283
-      Width = 195
-      Height = 20
-      Caption = 'Select ONNX MNIST Directory...'
-      TabOrder = 3
-      OnClick = ButtonSelectONNXClick
-    end
-    object ComboBox1: TComboBox
-      Left = 312
-      Top = 282
-      Width = 145
-      Height = 21
-      TabOrder = 4
-      Text = 'Select ML backend...'
-      OnChange = ComboBox1Change
-      Items.Strings = (
-        'ONNX Runtime'
-        'TensorFlow')
-    end
-    object SynEdit1: TSynEdit
-      Left = 286
-      Top = 139
-      Width = 675
-      Height = 133
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -13
-      Font.Name = 'Consolas'
-      Font.Style = []
-      Font.Quality = fqClearTypeNatural
-      TabOrder = 5
-      UseCodeFolding = False
-      Gutter.Font.Charset = DEFAULT_CHARSET
-      Gutter.Font.Color = clWindowText
-      Gutter.Font.Height = -11
-      Gutter.Font.Name = 'Consolas'
-      Gutter.Font.Style = []
-      Highlighter = SynPythonSyn
-      Lines.Strings = (
-        #39#39#39'$'
-        'diagnostic = True'
-        '$'#39#39#39
-        #39#39#39'{'
-        '"""!'
-        '}'#39#39#39
-        'from delphi_module import delphi_form'
-        ''
-        'diagnostic = delphi_form.isPictureEmpty'
-        #39#39#39'{'
-        '!"""'
-        '}'#39#39#39
-        ''
-        #39#39#39'$'
-        'backend = '#39'default'#39' #use ONNX Runtime'
-        'path_to_model = '#39'?'#39
-        '$'#39#39#39
-        ''
-        ''
-        #39#39#39'{'
-        '"""!'
-        '}'#39#39#39
-        'backend = delphi_form.backendSwitchTag'
-        'path_to_model = delphi_form.onnxDirectory'
-        #39#39#39'{'
-        '!"""'
-        '}'#39#39#39
-        ''
-        
-          'recognizer = ONNXMNIST_Recognizer.createRecognizer(backend, path' +
-          '_to_model)'
-        ''
-        'if diagnostic:'
-        '    recognizer.selfdiagnostic()'
-        '    exit'
-        #39#39#39'{'
-        '"""!'
-        '}'#39#39#39
-        'mnist_digit_pict = delphi_form.PictureData'
-        
-          'delphi_form.RecognizedValue =  recognizer.recognize(mnist_digit_' +
-          'pict)'
-        #39#39#39'{'
-        '!"""'
-        '}'#39#39#39)
-    end
-    object Button1: TButton
-      Left = 679
-      Top = 153
-      Width = 92
-      Height = 25
-      Caption = 'Recomment code'
-      TabOrder = 6
-      OnClick = Button1Click
-    end
+    ExplicitTop = 201
+    ExplicitWidth = 383
   end
   object Panel2: TPanel
     Left = 0
-    Top = 334
-    Width = 956
-    Height = 173
+    Top = 400
+    Width = 942
+    Height = 199
     Align = alBottom
-    TabOrder = 2
+    TabOrder = 1
     object HeaderControl2: THeaderControl
       Left = 1
       Top = 1
-      Width = 954
-      Height = 17
+      Width = 940
+      Height = 23
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -382,15 +48,15 @@ object Form1: TForm1
           AutoSize = True
           ImageIndex = -1
           Text = 'Python Output'
-          Width = 954
+          Width = 940
         end>
       ParentFont = False
     end
     object mePythonOutput: TMemo
       Left = 1
-      Top = 19
-      Width = 954
-      Height = 153
+      Top = 27
+      Width = 940
+      Height = 171
       Align = alBottom
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -399,6 +65,318 @@ object Form1: TForm1
       Font.Style = []
       ParentFont = False
       TabOrder = 1
+    end
+  end
+  object Panel1: TPanel
+    Left = 0
+    Top = 3
+    Width = 942
+    Height = 391
+    Align = alTop
+    ParentBackground = False
+    ParentColor = True
+    TabOrder = 0
+    object PageControl1: TPageControl
+      Left = 1
+      Top = 26
+      Width = 940
+      Height = 364
+      ActivePage = TabSheetJupyter
+      Align = alClient
+      TabOrder = 0
+      object TabSheetJupyter: TTabSheet
+        Caption = 'Jupyter  '
+        object sePythonCode: TSynEdit
+          Left = 0
+          Top = 48
+          Width = 932
+          Height = 257
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -13
+          Font.Name = 'Consolas'
+          Font.Style = []
+          Font.Quality = fqClearTypeNatural
+          TabOrder = 0
+          UseCodeFolding = False
+          Gutter.Font.Charset = DEFAULT_CHARSET
+          Gutter.Font.Color = clWindowText
+          Gutter.Font.Height = -11
+          Gutter.Font.Name = 'Consolas'
+          Gutter.Font.Style = []
+          Highlighter = SynPythonSyn
+          Lines.Strings = (
+            '# -*- coding: utf-8 -*-'
+            '"""'
+            'Created on Sat Feb  5 10:32:58 2022'
+            ''
+            '@author: KoRiF'
+            '"""'
+            
+              '#https://stackoverflow.com/questions/54475896/interact-with-jupy' +
+              'ter-notebooks-via-api'
+            'import json'
+            'import requests'
+            'import datetime'
+            'import uuid'
+            '#from pprint import pprint'
+            
+              'from websocket import create_connection #https://pypi.org/projec' +
+              't/websocket-client/'
+            'import socket'
+            ''
+            #39#39#39'{'
+            '"""%'
+            '}'#39#39#39
+            'from delphi_module import delphi_form'
+            ''
+            'notebook_path = delphi_form.jupyFilepath'
+            'base = delphi_form.jupySocket #'#39'http://localhost:8888'#39
+            'token = delphi_form.jupyToken'
+            ''
+            #39#39#39'{'
+            '%"""'
+            '}'#39#39#39
+            ''
+            ''
+            #39#39#39'$'
+            '# The token is written on stdout when you start the notebook'
+            'notebook_path = '#39'/Untitled.ipynb'#39
+            'base = '#39'http://localhost:8888'#39'#'#39'http://localhost:9999'#39
+            'token = '#39'67383dec0de54d40908840a56d6589be26a2d28d5abd22b6'#39
+            '$'#39#39#39
+            ''
+            'headers = {'#39'Authorization'#39': '#39'Token '#39' + token}'
+            'url = base + '#39'/api/kernels'#39' #'
+            'response = requests.post(url,headers=headers)'
+            
+              'kernel = json.loads(response.text) # get kernel info as json her' +
+              'e'
+            ''
+            '# Load the notebook and get the code of each cell'
+            'url = base + '#39'/api/contents'#39' + notebook_path'
+            'response = requests.get(url,headers=headers)'
+            
+              'file = json.loads(response.text) #get notebook content as json h' +
+              'ere'
+            'filecontent = file['#39'content'#39']'
+            'print(filecontent['#39'cells'#39'])'
+            
+              'code = [ c['#39'source'#39'] for c in file['#39'content'#39']['#39'cells'#39'] if len(c[' +
+              #39'source'#39'])>0 ] # get the list of code text blocks'
+            ''
+            ''
+            ''
+            ''
+            '# Execution request/reply is done on websockets channels'
+            '##ws = socket.socket(socket.AF_INET, socket.SOCK_STREAM)'
+            
+              'ws = create_connection("ws://localhost:8888/api/kernels/"+kernel' +
+              '["id"]+"/channels",'
+            '     header=headers)'
+            ''
+            '#ws.connect(("localhost", 8888))'
+            ''
+            
+              'def send_execute_request(code): # do not send anything really, j' +
+              'ust create properly formatted request'
+            '    msg_type = '#39'execute_request'#39';'
+            '    content = { '#39'code'#39' : code, '#39'silent'#39':False }'
+            '    hdr = { '#39'msg_id'#39' : uuid.uuid1().hex,'
+            '        '#39'username'#39': '#39'test'#39','
+            '        '#39'session'#39': uuid.uuid1().hex,'
+            '        '#39'data'#39': datetime.datetime.now().isoformat(),'
+            '        '#39'msg_type'#39': msg_type,'
+            '        '#39'version'#39' : '#39'5.0'#39' }'
+            '    msg = { '#39'header'#39': hdr, '#39'parent_header'#39': hdr,'
+            '        '#39'metadata'#39': {},'
+            '        '#39'content'#39': content }'
+            '    return msg'
+            ''
+            'for piece in code:  # execute the codes cell by cell'
+            '    delphi_form.addJupyCellCode(piece)'
+            '    '#39#39#39'$'
+            '    ws.send(json.dumps(send_execute_request(piece)))'
+            '    $'#39#39#39
+            ''
+            
+              '# We ignore all the other messages, we just get the code executi' +
+              'on output'
+            
+              '# (this needs to be improved for production to take into account' +
+              ' errors, large cell output, images, etc.)'
+            'for i in range(0, len(code)):'
+            '    msg_type = '#39#39';'
+            '    while msg_type != "stream":'
+            '        rsp = json.loads(ws.recv())'
+            '        msg_type = rsp["msg_type"]'
+            '    print(rsp["content"]["text"])'
+            ''
+            'ws.close()')
+        end
+        object btnRun: TButton
+          Left = 0
+          Top = 308
+          Width = 75
+          Height = 25
+          Align = alCustom
+          Caption = 'Run'
+          TabOrder = 1
+          OnClick = btnRunClick
+        end
+        object LabeledEditJupyToken: TLabeledEdit
+          Left = 0
+          Top = 21
+          Width = 201
+          Height = 21
+          EditLabel.Width = 118
+          EditLabel.Height = 13
+          EditLabel.Caption = 'Jupyter Notebook Token'
+          TabOrder = 2
+          Text = ''
+        end
+        object LabeledEditJupyFilePath: TLabeledEdit
+          Left = 224
+          Top = 21
+          Width = 233
+          Height = 21
+          EditLabel.Width = 125
+          EditLabel.Height = 13
+          EditLabel.Caption = 'Jupyter Notebook filepath'
+          TabOrder = 3
+          Text = '/AnacondaProjects/ONNXNotebook.ipynb'
+        end
+        object CheckBoxStripCellCode: TCheckBox
+          Left = 104
+          Top = 311
+          Width = 185
+          Height = 17
+          Caption = 'Strip Cell Delphi Interaction Code'
+          Checked = True
+          State = cbChecked
+          TabOrder = 4
+        end
+      end
+      object TabSheetRecognizers: TTabSheet
+        Caption = 'ONNX Recognizers'
+        ImageIndex = 1
+        object SynEditRecognizers: TSynEdit
+          Left = 0
+          Top = -10
+          Width = 911
+          Height = 313
+          Align = alCustom
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -13
+          Font.Name = 'Consolas'
+          Font.Style = []
+          Font.Quality = fqClearTypeNatural
+          TabOrder = 0
+          UseCodeFolding = False
+          Gutter.Font.Charset = DEFAULT_CHARSET
+          Gutter.Font.Color = clWindowText
+          Gutter.Font.Height = -11
+          Gutter.Font.Name = 'Consolas'
+          Gutter.Font.Style = []
+          Highlighter = SynPythonSyn
+        end
+        object ButtonSelectONNX: TButton
+          Left = 0
+          Top = 309
+          Width = 195
+          Height = 20
+          Caption = 'Select ONNX MNIST Directory...'
+          TabOrder = 1
+        end
+      end
+      object TabSheetRecognition: TTabSheet
+        Caption = 'Recognition'
+        ImageIndex = 2
+        object Image1: TImage
+          Left = 8
+          Top = 8
+          Width = 280
+          Height = 280
+          Cursor = crCross
+          Proportional = True
+          OnMouseDown = Image1MouseDown
+          OnMouseEnter = Image1MouseEnter
+          OnMouseLeave = Image1MouseLeave
+          OnMouseMove = Image1MouseMove
+          OnMouseUp = Image1MouseUp
+        end
+        object SynEditRecognize: TSynEdit
+          Left = 294
+          Top = -10
+          Width = 625
+          Height = 313
+          Align = alCustom
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -13
+          Font.Name = 'Consolas'
+          Font.Style = []
+          Font.Quality = fqClearTypeNatural
+          TabOrder = 0
+          UseCodeFolding = False
+          Gutter.Font.Charset = DEFAULT_CHARSET
+          Gutter.Font.Color = clWindowText
+          Gutter.Font.Height = -11
+          Gutter.Font.Name = 'Consolas'
+          Gutter.Font.Style = []
+          Highlighter = SynPythonSyn
+        end
+        object ButtonClear: TButton
+          Left = 3
+          Top = 313
+          Width = 105
+          Height = 20
+          Caption = 'Clear'
+          TabOrder = 1
+          OnClick = ButtonClearClick
+        end
+        object ButtonRecognize: TButton
+          Left = 239
+          Top = 313
+          Width = 105
+          Height = 20
+          Caption = 'Recognize!'
+          TabOrder = 2
+          OnClick = ButtonRecognizeClick
+        end
+        object ComboBox1: TComboBox
+          Left = 111
+          Top = 312
+          Width = 122
+          Height = 21
+          TabOrder = 3
+          Text = 'Select ML backend...'
+          Items.Strings = (
+            'ONNX Runtime'
+            'TensorFlow')
+        end
+      end
+    end
+    object HeaderControl1: THeaderControl
+      Left = 1
+      Top = 1
+      Width = 940
+      Height = 25
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      Sections = <
+        item
+          Alignment = taCenter
+          AutoSize = True
+          ImageIndex = -1
+          Text = 'Python Source code'
+          Width = 940
+        end>
+      ParentFont = False
     end
   end
   object SynPythonSyn: TSynPythonSyn
@@ -427,17 +405,16 @@ object Form1: TForm1
     Left = 880
     Top = 80
   end
-  object PyDelphiWrapper1: TPyDelphiWrapper
-    Engine = PythonEngine
-    Module = PythonModule1
-    Left = 208
-    Top = 49
-  end
   object PythonModule1: TPythonModule
     Engine = PythonEngine
     ModuleName = 'delphi_module'
     Errors = <>
-    Left = 208
-    Top = 113
+    Left = 757
+    Top = 149
+  end
+  object PyDelphiWrapper1: TPyDelphiWrapper
+    Engine = PythonEngine
+    Left = 877
+    Top = 149
   end
 end

@@ -3,15 +3,16 @@ unit MainForm;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, System.Generics.Collections,
+  Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, SynEdit, Vcl.StdCtrls,
   PythonEngine, PythonGUIInputOutput, SynEditPythonBehaviour,
-  SynEditHighlighter, SynEditCodeFolding, SynHighlighterPython, Vcl.ExtCtrls,
-  WrapDelphi;
+  SynEditHighlighter, SynEditCodeFolding, SynHighlighterPython,
+  WrapDelphi,
+  Vcl.ExtCtrls, Vcl.Mask;
 
 type
   TForm1 = class(TForm)
-    sePythonCode: TSynEdit;
     HeaderControl1: THeaderControl;
     Panel1: TPanel;
     Splitter1: TSplitter;
@@ -23,32 +24,37 @@ type
     PythonEngine: TPythonEngine;
     PythonGUIInputOutput: TPythonGUIInputOutput;
     btnRun: TButton;
-    PaintBox1: TPaintBox;
-    ButtonClear: TButton;
+    sePythonCode: TSynEdit;
+
+    PageControl1: TPageControl;
+    TabSheetJupyter: TTabSheet;
+    TabSheetRecognition: TTabSheet;
+    SynEditRecognizers: TSynEdit;
+    TabSheetRecognizers: TTabSheet;
+    SynEditRecognize: TSynEdit;
     Image1: TImage;
-    PyDelphiWrapper1: TPyDelphiWrapper;
-    PythonModule1: TPythonModule;
+    ButtonRecognize: TButton;
+    ButtonClear: TButton;
     ButtonSelectONNX: TButton;
     ComboBox1: TComboBox;
-    SynEdit1: TSynEdit;
-    Button1: TButton;
+    LabeledEditJupyToken: TLabeledEdit;
+    LabeledEditJupyFilePath: TLabeledEdit;
+    PythonModule1: TPythonModule;
+    PyDelphiWrapper1: TPyDelphiWrapper;
+    CheckBoxStripCellCode: TCheckBox;
     procedure btnRunClick(Sender: TObject);
     procedure PythonEngineBeforeLoad(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure ButtonRecognizeClick(Sender: TObject);
     procedure Image1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure Image1MouseEnter(Sender: TObject);
+    procedure Image1MouseLeave(Sender: TObject);
     procedure Image1MouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
     procedure Image1MouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure Image1MouseLeave(Sender: TObject);
-    procedure Image1MouseEnter(Sender: TObject);
     procedure ButtonClearClick(Sender: TObject);
-    procedure ButtonSelectONNXClick(Sender: TObject);
-    procedure ComboBox1Change(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
-
-
   private
     { Private declarations }
     drawingNow: Boolean;
@@ -56,10 +62,14 @@ type
     _backendSwitchTag: string;
     _value: Integer;
     _ONNXDir: String;
+    jupyCells: TDictionary<String, String>;
+    function getJupyToken: string;
     const COLOR_BACKGROUND: TColor = clBackground;
     const COLOR_PEN: TColor = clOlive;
     procedure ClearPicture();
     function getPictureData(): TArray<Byte>;
+    function getJupyFilepath(): string;
+    function getJupySocket(): string;
   public
     { Public declarations }
     property onnxDirectory: string read _ONNXDir;
@@ -67,6 +77,10 @@ type
     property PictureData: TArray<Byte> read getPictureData;
     property backendSwitchTag: string read _backendSwitchTag;
     property RecognizedValue: Integer write _value;
+    property jupyFilepath: string read getJupyFilepath;
+    property jupyToken: string read getJupyToken;
+    property jupySocket: string read getJupySocket;
+    procedure addJupyCellCode(code: string);
   end;
 
 var
@@ -81,20 +95,60 @@ uses
   WrapDelphiVCL,
   System.Rtti,
   System.Threading,
-  System.Math
-  , UnitPy4DUtils;
+  System.Math,
+  UnitPy4DUtils;
 
 const
   defaultDir = 'c:\Users\KoRiF\Documents\Embarcadero\Studio\Projects\AI\ONNX\Zoo\models\vision\classification\mnist\model\mnist\';
+  defaultHttpSocket = 'http://localhost:8888';
+
+procedure TForm1.addJupyCellCode(code: string);
+begin
+  var celltext := code;
+  var cellkey := extractJuPyCellKey(code);
+  jupyCells.AddOrSetValue(cellkey, code);
+end;
 
 procedure TForm1.btnRunClick(Sender: TObject);
+begin
+  try
+//PythonEngine.LoadDll;
+    PythonEngine.ExecString(UTF8Encode(sePythonCode.Text));
+    var codeRecognizerClasses := '';
+    if jupyCells.TryGetValue('ONNX-based recognizers', codeRecognizerClasses) then
+    begin
+      if CheckBoxStripCellCode.Checked then
+        codeRecognizerClasses := includeDelphiInteraction(codeRecognizerClasses);
+      SynEditRecognizers.Text := codeRecognizerClasses;
+    end;
+
+    var codeRecognizeApp := '';
+    if jupyCells.TryGetValue('application', codeRecognizeApp) then
+    begin
+      if CheckBoxStripCellCode.Checked then
+        codeRecognizeApp := includeDelphiInteraction(codeRecognizeApp);
+      SynEditRecognize.Text := codeRecognizeApp;
+    end;
+    ShowMessage('Successfully attached to the Jupyter Notebook!');
+
+  except on Ex: EPySystemExit do
+  end;
+end;
+
+procedure TForm1.ButtonClearClick(Sender: TObject);
+begin
+  ClearPicture();
+  _isPictureEmpty := True;
+end;
+
+procedure TForm1.ButtonRecognizeClick(Sender: TObject);
 var
   pictBytes : TBytesStream;
 begin
-  //passPicture();
   try
-    PythonEngine.ExecString(UTF8Encode(sePythonCode.Text));
-    PythonEngine.ExecString(UTF8Encode(SynEdit1.Text))
+    PythonEngine.ExecString(UTF8Encode(SynEditRecognizers.Text));
+    PythonEngine.ExecString(UTF8Encode(SynEditRecognize.Text));
+
   except on Ex: EPySystemExit do
     begin
       var code := Ex.EValue;
@@ -109,33 +163,6 @@ begin
   ShowMessage('Recognized value is: ' + IntToStr(_value));
 end;
 
-procedure TForm1.Button1Click(Sender: TObject);
-begin
-  if _isPictureEmpty then
-    SynEdit1.Text := excludeDelphiInteraction(SynEdit1.Text)
-  else
-    SynEdit1.Text := includeDelphiInteraction(SynEdit1.Text);
-end;
-
-procedure TForm1.ButtonClearClick(Sender: TObject);
-begin
-  ClearPicture();
-  _isPictureEmpty := True;
-end;
-
-procedure TForm1.ButtonSelectONNXClick(Sender: TObject);
-var directories: TArray<String>;
-begin
-  directories := TArray<String>.Create();
-  var ok := FileCtrl.SelectDirectory(_ONNXDir,directories, [], 'Select ONNX Model Directory'); //TSelectDirFileDlgOpts
-  if ok then
-  begin
-    if (Length(directories)>0) and DirectoryExists(directories[0]) then
-      _ONNXDir := directories[0];
-  end;
-
-end;
-
 procedure TForm1.ClearPicture;
 begin
   Image1.Canvas.Pen.Color := COLOR_BACKGROUND;
@@ -143,17 +170,6 @@ begin
   Image1.Canvas.FillRect(Rect(0,0,Image1.Height,Image1.Width));
   Image1.Canvas.Pen.Color := COLOR_PEN;
   Image1.Canvas.Brush.Color := COLOR_PEN;
-end;
-
-procedure TForm1.ComboBox1Change(Sender: TObject);
-begin
-  //select ML backend for run ONNX model
-  case ComboBox1.ItemIndex of
-  1: _backendSwitchTag := 'TF';
-  //... add other options here ...
-  else
-     _backendSwitchTag := 'runtime';
-  end;
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
@@ -169,6 +185,23 @@ begin
   Image1.Canvas.Pen.Width := 10;
   _ONNXDir := defaultDir;
   _backendSwitchTag := 'ONNX Runtime';
+
+  jupyCells := TDictionary<String, String>.Create();
+end;
+
+function TForm1.getJupyFilepath: string;
+begin
+  RESULT := LabeledEditJupyFilePath.Text;
+end;
+
+function TForm1.getJupySocket: string;
+begin
+  RESULT := defaultHttpSocket;
+end;
+
+function TForm1.getJupyToken: string;
+begin
+  RESULT := LabeledEditJupyToken.Text;
 end;
 
 function TForm1.getPictureData: TArray<Byte>;
@@ -218,7 +251,6 @@ procedure TForm1.PythonEngineBeforeLoad(Sender: TObject);
 begin
   PythonEngine.SetPythonHome('C:\ProgramData\Anaconda3');
 end;
-
 begin
   MaskFPUExceptions(True);
 end.
