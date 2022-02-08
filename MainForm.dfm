@@ -274,7 +274,9 @@ object Form1: TForm1
           Font.Name = 'Consolas'
           Font.Style = []
           Font.Quality = fqClearTypeNatural
+          PopupMenu = PopupMenuJuPy4D
           TabOrder = 0
+          OnMouseUp = SynEditRecognizersMouseUp
           UseCodeFolding = False
           Gutter.Font.Charset = DEFAULT_CHARSET
           Gutter.Font.Color = clWindowText
@@ -320,7 +322,9 @@ object Form1: TForm1
           Font.Name = 'Consolas'
           Font.Style = []
           Font.Quality = fqClearTypeNatural
+          PopupMenu = PopupMenuJuPy4D
           TabOrder = 0
+          OnMouseUp = SynEditRecognizeMouseUp
           UseCodeFolding = False
           Gutter.Font.Charset = DEFAULT_CHARSET
           Gutter.Font.Color = clWindowText
@@ -418,5 +422,25 @@ object Form1: TForm1
     Engine = PythonEngine
     Left = 877
     Top = 149
+  end
+  object PopupMenuJuPy4D: TPopupMenu
+    Left = 653
+    Top = 53
+    object WrapasPyDelphionly1: TMenuItem
+      Caption = 'Wrap selected as PyDelphi-Only'
+      OnClick = WrapasPyDelphionly1Click
+    end
+    object WrapasJupyterOnly1: TMenuItem
+      Caption = 'Wrap selected as Jupyter-Only'
+      OnClick = WrapasJupyterOnly1Click
+    end
+    object StripselectedfromJupyterOnly1: TMenuItem
+      Caption = 'Strip selected from Jupyter-Only'
+      OnClick = StripselectedfromJupyterOnly1Click
+    end
+    object StripselectedfromDelphiOnly1: TMenuItem
+      Caption = 'Strip selected from Delphi-Only'
+      OnClick = StripselectedfromDelphiOnly1Click
+    end
   end
 end

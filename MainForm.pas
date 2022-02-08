@@ -9,7 +9,7 @@ uses
   PythonEngine, PythonGUIInputOutput, SynEditPythonBehaviour,
   SynEditHighlighter, SynEditCodeFolding, SynHighlighterPython,
   WrapDelphi,
-  Vcl.ExtCtrls, Vcl.Mask;
+  Vcl.ExtCtrls, Vcl.Mask, Vcl.Menus;
 
 type
   TForm1 = class(TForm)
@@ -42,6 +42,11 @@ type
     PythonModule1: TPythonModule;
     PyDelphiWrapper1: TPyDelphiWrapper;
     CheckBoxStripCellCode: TCheckBox;
+    PopupMenuJuPy4D: TPopupMenu;
+    WrapasPyDelphionly1: TMenuItem;
+    WrapasJupyterOnly1: TMenuItem;
+    StripselectedfromJupyterOnly1: TMenuItem;
+    StripselectedfromDelphiOnly1: TMenuItem;
     procedure btnRunClick(Sender: TObject);
     procedure PythonEngineBeforeLoad(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -55,6 +60,14 @@ type
     procedure Image1MouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure ButtonClearClick(Sender: TObject);
+    procedure SynEditRecognizersMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure SynEditRecognizeMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure WrapasPyDelphionly1Click(Sender: TObject);
+    procedure WrapasJupyterOnly1Click(Sender: TObject);
+    procedure StripselectedfromJupyterOnly1Click(Sender: TObject);
+    procedure StripselectedfromDelphiOnly1Click(Sender: TObject);
   private
     { Private declarations }
     drawingNow: Boolean;
@@ -63,6 +76,10 @@ type
     _value: Integer;
     _ONNXDir: String;
     jupyCells: TDictionary<String, String>;
+    selectedJuPyCode: string;
+
+    procedure noteSelectedPyCode(SynEdit: TSynEdit);
+    procedure replaceSelectedPyCode(SynEdit: TSynEdit; replacementCode: string);
     function getJupyToken: string;
     const COLOR_BACKGROUND: TColor = clBackground;
     const COLOR_PEN: TColor = clOlive;
@@ -247,10 +264,89 @@ begin
   drawingNow := False;
 end;
 
+procedure TForm1.noteSelectedPyCode(SynEdit: TSynEdit);
+begin
+  var start := SynEdit.SelStart;
+  var fin := SynEdit.SelEnd;
+  selectedJuPyCode := SynEdit.Text.Substring(start, fin - start);
+end;
+
+procedure TForm1.replaceSelectedPyCode(SynEdit: TSynEdit; replacementCode: string);
+begin
+  var start := SynEdit.SelStart;
+  var fin := SynEdit.SelEnd;
+  var l0 := fin - start;
+  var ll := Length(replacementCode);
+  var originalCode := SynEdit.Text;
+  SynEdit.Text := originalCode.Substring(0, start - 1) + replacementCode + originalCode.Substring(fin + 1);
+
+end;
+
+procedure TForm1.StripselectedfromDelphiOnly1Click(Sender: TObject);
+begin
+  var Caller := ((Sender as TMenuItem).GetParentMenu as TPopupMenu).PopupComponent;
+  var SynEdit := Caller as TSynEdit;
+
+  var LRLF := configureLineBreak(#$D#$A);
+  var strippedCode := wrapAsPyDelphiOnly(selectedJuPyCode, true);
+  replaceSelectedPyCode(SynEdit, strippedCode);
+  configureLineBreak(LRLF);
+end;
+
+procedure TForm1.StripselectedfromJupyterOnly1Click(Sender: TObject);
+begin
+  var Caller := ((Sender as TMenuItem).GetParentMenu as TPopupMenu).PopupComponent;
+  var SynEdit := Caller as TSynEdit;
+
+  var LRLF := configureLineBreak(#$D#$A);
+  var strippedCode := wrapAsJuPyOnly(selectedJuPyCode, true);
+  replaceSelectedPyCode(SynEdit, strippedCode);
+  configureLineBreak(LRLF);
+end;
+
+procedure TForm1.SynEditRecognizeMouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  if Button = mbRight then
+    noteSelectedPyCode(SynEditRecognize);
+end;
+
+procedure TForm1.SynEditRecognizersMouseUp(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  if Button = mbRight then
+    noteSelectedPyCode(SynEditRecognizers);
+end;
+
+procedure TForm1.WrapasJupyterOnly1Click(Sender: TObject);
+begin
+  var Caller := ((Sender as TMenuItem).GetParentMenu as TPopupMenu).PopupComponent;
+  var SynEdit := Caller as TSynEdit;
+
+  var LRLF := configureLineBreak(#$D#$A);
+  var wrappedCode := wrapAsJuPyOnly(selectedJuPyCode);
+  replaceSelectedPyCode(SynEdit, wrappedCode);
+  configureLineBreak(LRLF);
+end;
+
+procedure TForm1.WrapasPyDelphionly1Click(Sender: TObject);
+begin
+  var Caller := ((Sender as TMenuItem).GetParentMenu as TPopupMenu).PopupComponent;
+  var SynEdit := Caller as TSynEdit;
+
+  var LRLF := configureLineBreak(#$D#$A);
+  var wrappedCode := wrapAsPyDelphiOnly(selectedJuPyCode);
+  replaceSelectedPyCode(SynEdit, wrappedCode);
+  configureLineBreak(LRLF);
+end;
+
 procedure TForm1.PythonEngineBeforeLoad(Sender: TObject);
 begin
   PythonEngine.SetPythonHome('C:\ProgramData\Anaconda3');
 end;
+
+
+
 begin
   MaskFPUExceptions(True);
 end.
