@@ -116,7 +116,7 @@ uses
   UnitPy4DUtils;
 
 const
-  defaultDir = 'c:\Users\KoRiF\Documents\Embarcadero\Studio\Projects\AI\ONNX\Zoo\models\vision\classification\mnist\model\mnist\';
+  defaultDir = '\models\vision\classification\mnist\model\mnist\';
   defaultHttpSocket = 'http://localhost:8888';
 
 procedure TForm1.addJupyCellCode(code: string);
@@ -129,7 +129,6 @@ end;
 procedure TForm1.btnRunClick(Sender: TObject);
 begin
   try
-//PythonEngine.LoadDll;
     PythonEngine.ExecString(UTF8Encode(sePythonCode.Text));
     var codeRecognizerClasses := '';
     if jupyCells.TryGetValue('ONNX-based recognizers', codeRecognizerClasses) then
@@ -200,7 +199,7 @@ begin
   _isPictureEmpty := true;
 
   Image1.Canvas.Pen.Width := 10;
-  _ONNXDir := defaultDir;
+  _ONNXDir := GetEnvironmentVariable('ONNXZoo') + defaultDir;
   _backendSwitchTag := 'ONNX Runtime';
 
   jupyCells := TDictionary<String, String>.Create();
@@ -342,7 +341,7 @@ end;
 
 procedure TForm1.PythonEngineBeforeLoad(Sender: TObject);
 begin
-  PythonEngine.SetPythonHome('C:\ProgramData\Anaconda3');
+  PythonEngine.SetPythonHome(GetEnvironmentVariable('PYANACONDAHOME'));
 end;
 
 
